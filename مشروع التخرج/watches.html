@@ -7,11 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
  body { margin:0; font-family:'Poppins',sans-serif; background:radial-gradient(circle at 20% 20%,rgba(250,204,21,0.06),transparent 25%),radial-gradient(circle at 80% 10%,rgba(96,165,250,0.08),transparent 22%),#0b1224; color:#facc15; display:flex; flex-direction:column; align-items:center; }
-  header { display:flex; justify-content:space-between; align-items:center; padding:16px 28px; background:linear-gradient(90deg,#0f172a,#0b132c); border-bottom:2px solid #facc15; width:100%; position:fixed; top:0; left:0; z-index:100; backdrop-filter:blur(8px); }
+  header { display:flex; justify-content:center; align-items:center; padding:16px 28px; background:linear-gradient(90deg,#0f172a,#0b132c); border-bottom:2px solid #facc15; width:100%; position:fixed; top:0; left:0; z-index:100; backdrop-filter:blur(8px); }
   header h1 { color:#facc15; font-size:1.6rem; margin:0; letter-spacing:1px; }
-  header .search-wrapper { display:flex; align-items:center; gap:10px; background:#0b1224; border:1px solid rgba(250,204,21,0.6); border-radius:999px; padding:8px 14px; box-shadow:0 0 12px rgba(250,204,21,0.25); }
-  header input { padding:6px 10px; border-radius:12px; border:none; background:transparent; color:#facc15; min-width:220px; outline:none; }
-  header input::placeholder { color:rgba(250,204,21,0.7); }
   .spacer { height:90px; }
   .hero { text-align:center; margin:30px auto 10px; max-width:760px; padding:0 16px; }
   .hero h2 { margin:0 0 10px; font-size:1.8rem; color:#facc15; }
@@ -56,9 +53,6 @@
 
 <header>
   <h1>Brand Store</h1>
-  <div class="search-wrapper">
-    <input type="text" placeholder="ابحث عن منتج أو اسم براند..." id="searchInput">
-  </div>
 </header>
 <div class="spacer"></div>
 
@@ -123,14 +117,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const openModalBtn = document.getElementById('openModal');
   const closeModalBtn = document.getElementById('closeModal');
   const addItemBtn = document.getElementById('addItemBtn');
-  const brandBar = document.getElementById('brandBar');
+ const brandBar = document.getElementById('brandBar');
   const productGrid = document.getElementById('productGrid');
   const itemType = document.getElementById('itemType');
   const brandSelectLabel = document.getElementById('brandSelectLabel');
   const productBrandSelect = document.getElementById('productBrandSelect');
    const productPrice = document.getElementById('productPrice');
   const productDesc = document.getElementById('productDesc');
-  const searchInput = document.getElementById('searchInput');
   const cartBtn = document.getElementById('cartBtn');
 
   function getCartItems(){
@@ -215,11 +208,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
    function renderBrands(){
     brandBar.innerHTML='';
-    const term = searchInput.value.trim().toLowerCase();
     brands.forEach(b=>{
-      const matchesSearch = !term || b.name.toLowerCase().includes(term);
-      if(!matchesSearch) return;
-
       const btn=document.createElement('div');
       btn.classList.add('brand-btn');
       if(currentBrand===b.name){ btn.classList.add('active'); }
@@ -274,11 +263,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       return;
     }
 
-    const term = searchInput.value.trim().toLowerCase();
     let filtered = products.filter(p=>p.brand===currentBrand);
-    if(term){
-      filtered = filtered.filter(p=>p.name.toLowerCase().includes(term));
-    }
 
     if(filtered.length===0){
       productGrid.innerHTML = '<p style="color:#facc15; font-weight:600;">لا توجد منتجات متاحة لهذا البراند.</p>';
@@ -360,12 +345,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         console.error('خطأ بالرفع أو الحفظ:', err);
         alert('حدث خطأ في رفع الصورة أو حفظ البيانات. تحقق من الاتصال أو المفتاح.');
       });
-  });
-
-searchInput.addEventListener('input', ()=>{
-    renderBrands();
-    renderProducts();
-  });
+ });
   currentBrand=null;
   renderProducts();
 });
