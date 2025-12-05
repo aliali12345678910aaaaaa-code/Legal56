@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>براند ستور | Brand Store</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome للأيقونات -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-XxVtYQ+ghcGrRn/D6jz0c+3kWkZz2E6Oz/Ud7sFlz1/+9Th9RbGdYHw4vwx6N9Z6FqxN3vS2/1j2FqgSgYJ6PQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Tajawal', sans-serif;
+      background-color: #111827;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    /* 🏷️ اسم الموقع */
+    .site-name {
+      position: fixed;
+      top: 18px;
+      left: 30px;
+      font-size: 30px;
+      font-weight: 700;
+      color: #facc15;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      z-index: 20;
+    }
+
+    /* 📰 شريط الأخبار */
+    .news-ticker {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: #1f2937;
+      color: #fff;
+      padding: 10px 0;
+      overflow: hidden;
+      white-space: nowrap;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+      z-index: 10;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .news-text {
+      display: inline-block;
+      padding-right: 100%;
+      animation: scrollText 20s linear infinite;
+      font-size: 15px;
+    }
+
+    @keyframes scrollText {
+      from { transform: translateX(100%); }
+      to { transform: translateX(-100%); }
+    }
+
+    .news-text span {
+      margin-left: 40px;
+      color: #facc15;
+      font-weight: 600;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+    }
+
+    /* 🔍 شريط البحث */
+    .search-container {
+      margin-top: 25vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 50px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      padding: 10px 20px;
+      width: 450px;
+      max-width: 90%;
+    }
+
+    .search-box input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      padding: 10px;
+      background: transparent;
+      color: #333;
+    }
+
+    .search-box button {
+      background-color: #facc15;
+      color: #000;
+      border: none;
+      border-radius: 25px;
+      padding: 10px 25px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: bold;
+    }
+
+    .search-box button:hover {
+      background-color: #d4af37;
+    }
+
+    /* 🔐 زر تسجيل الدخول */
+    .login-btn {
+      position: fixed;
+      top: 60px; /* تم تعديل الارتفاع لتجنب تداخل شريط الأخبار */
+      right: 30px;
+      background-color: transparent;
+      border: 2px solid #facc15;
+      color: #facc15;
+      padding: 8px 18px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .login-btn:hover {
+      background-color: #facc15;
+      color: #000;
+    }
+
+    /*  الأقسام */
+    .sections {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 25px;
+      justify-items: center;
+      margin-top: 60px;
+      padding: 20px;
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .section-box {
+      background: linear-gradient(145deg, #1f2937, #111827);
+      width: 140px;
+      height: 130px;
+      border-radius: 18px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .section-box:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 6px 18px rgba(250,204,21,0.3);
+      border: 1px solid #facc15;
+    }
+
+    .section-box:active {
+      transform: scale(0.95);
+    }
+
+    .section-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+      color: #facc15;
+    }
+
+    .section-label {
+      font-size: 16px;
+      font-weight: 600;
+      color: #facc15;
+    }
+
+    /*  تجاوب */
+    @media (max-width: 900px) {
+      .sections {
+        gap: 20px;
+      }
+      .section-box {
+        width: 130px;
+        height: 120px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .site-name {
+        font-size: 24px;
+        top: 15px;
+        left: 15px;
+      }
+      .login-btn {
+        right: 15px;
+        top: 55px; /* تم تعديل الارتفاع لتجنب تداخل شريط الأخبار */
+        padding: 6px 12px;
+      }
+      .section-box {
+        width: 120px;
+        height: 110px;
+      }
+      .search-box {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!--  شريط الأخبار -->
+  <div class="news-ticker">
+    <div class="news-text">
+      🔥 <span>تخفيضات الصيف تصل إلى 50%</span> |
+      💎 <span>عطور فاخرة وصلت حديثاً!</span> |
+      ⌚ <span>عرض خاص على ساعات رولكس الأصلية!</span> |
+      😎 <span>نظارات ماركات عالمية بأسعار مميزة</span>
+    </div>
+  </div>
+
+  <!--  اسم الموقع -->
+  <div class="site-name">براند ستور</div>
+
+  <!-- 🔐 زر تسجيل الدخول -->
+  <a href="login.html" class="login-btn">تسجيل الدخول</a>
+
+  <!-- 🔍 شريط البحث -->
+  <div class="search-container">
+    <div class="search-box">
+      <input type="text" placeholder="ابحث عن منتج أو ماركة...">
+      <button>بحث</button>
+    </div>
+  </div>
+
+  <!--  أقسام -->
+  <div class="sections">
+    <div class="section-box" onclick="window.location.href='watches.html'">
+      <div class="section-icon"><i class="fa-solid fa-clock"></i></div>
+      <div class="section-label">ساعات</div>
+    </div>
+
+    <div class="section-box" onclick="window.location.href='glasses.html'">
+      <div class="section-icon"><i class="fa-solid fa-sunglasses"></i></div>
+      <div class="section-label"><نظارات></div>
+    </div>
+
+    <div class="section-box" onclick="window.location.href='perfumes.html'">
+      <div class="section-icon"><i class="fa-solid fa-gem"></i></div>
+      <div class="section-label">عطور</div>
+    </div>
+
+    <div class="section-box" onclick="window.location.href='clothes.html'">
+      <div class="section-icon"><i class="fa-solid fa-shirt"></i></div>
+      <div class="section-label">ملابس</div>
+    </div>
+
+    <div class="section-box" onclick="window.location.href='offers.html'">
+      <div class="section-icon"><i class="fa-solid fa-tag"></i></div>
+      <div class="section-label">العروض</div>
+    </div>
+  </div>
+
+</body>
+</html>

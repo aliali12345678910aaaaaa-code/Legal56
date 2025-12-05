@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سلة المشتريات</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  body {
+    margin:0;
+    font-family:'Poppins',sans-serif;
+    background:#0f172a;
+    color:#facc15;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    min-height:100vh;
+    padding:30px 15px;
+  }
+  .cart-container {
+    background:#1e293b;
+    border:2px solid #facc15;
+    border-radius:15px;
+    padding:25px;
+    width:100%;
+    max-width:700px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.3);
+  }
+  h1 {
+    margin-top:0;
+    text-align:center;
+  }
+  .cart-item {
+    display:flex;
+    gap:15px;
+    align-items:center;
+    background:rgba(15,23,42,0.6);
+    border-radius:10px;
+    padding:15px;
+    margin-bottom:15px;
+  }
+  .cart-item img {
+    width:80px;
+    height:80px;
+    object-fit:cover;
+    border-radius:10px;
+    border:1px solid #facc15;
+  }
+  .item-details {
+    flex:1;
+  }
+  .item-details h3 {
+    margin:0 0 5px;
+  }
+  .item-details p {
+    margin:0;
+    font-size:0.95rem;
+  }
+  .item-actions {
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    align-items:flex-end;
+  }
+  button {
+    border:none;
+    background:#facc15;
+    color:#0f172a;
+    border-radius:6px;
+    padding:8px 14px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+  }
+  button:hover {
+    background:#eab308;
+  }
+  .empty-message {
+    text-align:center;
+    padding:40px 10px;
+    background:rgba(15,23,42,0.6);
+    border-radius:10px;
+    font-size:1.1rem;
+  }
+  .cart-actions {
+    display:flex;
+    justify-content:space-between;
+    margin-top:20px;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .total {
+    text-align:left;
+    font-size:1.2rem;
+    font-weight:bold;
+    margin-top:10px;
+  }
+</style>
+</head>
+<body>
+<div class="cart-container">
+  <h1>سلة المشتريات</h1>
+  <div id="cartItems"></div>
+  <div class="total" id="cartTotal"></div>
+  <div class="cart-actions">
+    <button id="goBackBtn">العودة</button>
+    <button id="clearCartBtn">تفريغ السلة</button>
+    <button id="checkoutBtn">إتمام الشراء</button>
+  </div>
+</div>
+
+<script>
+const cartItemsContainer = document.getElementById('cartItems');
+const cartTotal = document.getElementById('cartTotal');
+const goBackBtn = document.getElementById('goBackBtn');
+const clearCartBtn = document.getElementById('clearCartBtn');
+const checkoutBtn = document.getElementById('checkoutBtn');
+
+goBackBtn.addEventListener('click', ()=> history.back());
+clearCartBtn.addEventListener('click', ()=>{
+  localStorage.removeItem('cartItems');
+  renderCart();
+});
+checkoutBtn.addEventListener('click', ()=>{
+  if(!getCartItems().length){
+    alert('السلة فارغة حالياً.');
+    return;
+  }
+  alert('شكراً لك! سيتم التواصل معك لإتمام عملية الشراء.');
+});
+
+function getCartItems(){
+  return JSON.parse(localStorage.getItem('cartItems') || '[]');
+}
+
+function saveCartItems(items){
+  localStorage.setItem('cartItems', JSON.stringify(items));
+}
+
+function removeItem(index){
+  const items = getCartItems();
+  items.splice(index,1);
+  saveCartItems(items);
+  renderCart();
+}
+
+function updateQuantity(index, delta){
+  const items = getCartItems();
+  if(!items[index]) return;
+  items[index].quantity = Math.max(1, (items[index].quantity || 1) + delta);
+  saveCartItems(items);
+  renderCart();
+}
+
+function renderCart(){
+  const items = getCartItems();
+  cartItemsContainer.innerHTML = '';
+  if(items.length === 0){
+    cartItemsContainer.innerHTML = '<div class="empty-message">سلتك فارغة حالياً.</div>';
+    cartTotal.textContent = '';
+    return;
+  }
+
+  let total = 0;
+
+  items.forEach((item, index)=>{
+    const quantity = item.quantity || 1;
+    const price = parseFloat(item.price) || 0;
+    total += price * quantity;
+
+    const itemEl = document.createElement('div');
+    itemEl.className = 'cart-item';
+    itemEl.innerHTML = `
+      <img src="${item.img || ''}" alt="${item.name || 'منتج'}">
+      <div class="item-details">
+        <h3>${item.name || 'منتج بدون اسم'}</h3>
+        <p>البراند: ${item.brand || 'غير محدد'}</p>
+        <p>السعر: $${price.toFixed(2)}</p>
+      </div>
+      <div class="item-actions">
+        <div>
+          <button data-action="increase">+</button>
+          <span style="margin:0 8px; font-weight:bold; color:#facc15;">${quantity}</span>
+          <button data-action="decrease">-</button>
+        </div>
+        <button data-action="remove">حذف</button>
+      </div>
+    `;
+
+    const increaseBtn = itemEl.querySelector('button[data-action="increase"]');
+    const decreaseBtn = itemEl.querySelector('button[data-action="decrease"]');
+    const removeBtn = itemEl.querySelector('button[data-action="remove"]');
+
+    increaseBtn.addEventListener('click', ()=> updateQuantity(index, 1));
+    decreaseBtn.addEventListener('click', ()=> updateQuantity(index, -1));
+    removeBtn.addEventListener('click', ()=> removeItem(index));
+
+    cartItemsContainer.appendChild(itemEl);
+  });
+
+  cartTotal.textContent = `الإجمالي: $${total.toFixed(2)}`;
+}
+
+renderCart();
+window.addEventListener('storage', renderCart);
+</script>
+</body>
+</html>

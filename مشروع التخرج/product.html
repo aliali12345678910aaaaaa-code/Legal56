@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>صفحة المنتج</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  body {
+    margin:0;
+    font-family:'Poppins',sans-serif;
+    background:#0f172a;
+    color:#facc15;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:20px;
+  }
+  .product-container {
+    background:#1e293b;
+    border:2px solid #facc15;
+    border-radius:15px;
+    padding:20px;
+    max-width:500px;
+    width:100%;
+    text-align:center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+  .product-container img {
+    width:100%;
+    border-radius:10px;
+    object-fit:cover;
+    margin-bottom:15px;
+  }
+  .product-container h1 {
+    margin:15px 0 10px;
+    font-size:1.8em;
+  }
+  .product-container p {
+    margin:5px 0;
+    font-size:1.1em;
+  }
+  .action-buttons {
+    margin-top:15px;
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+  .back-btn,
+  .add-cart-btn {
+    padding:10px 20px;
+    border:none;
+    background:#facc15;
+    color:#0f172a;
+    border-radius:5px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:0.3s;
+  }
+  .back-btn:hover,
+  .add-cart-btn:hover { background:#eab308; }
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+</head>
+<body>
+
+<div class="product-container" id="productContainer">
+  <h1 id="productName">جارٍ التحميل...</h1>
+  <img id="productImage" src="" alt="صورة المنتج">
+  <p id="productBrand"></p>
+  <p id="productPrice"></p>
+   <p id="productDesc"></p>
+  <div class="action-buttons">
+    <button class="back-btn" onclick="history.back()">العودة</button>
+    <button class="add-cart-btn" id="addToCartBtn">إضافة للسلة</button>
+  </div>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyC90sXtT6wNLWqR6SEBumToXC66iuNyBS8",
+  authDomain: "brand-store-5ec72.firebaseapp.com",
+  databaseURL: "https://brand-store-5ec72-default-rtdb.firebaseio.com",
+  projectId: "brand-store-5ec72",
+  storageBucket: "brand-store-5ec72.appspot.com",
+  messagingSenderId: "89302882519",
+  appId: "1:89302882519:web:28db21462957f7b1417892",
+  measurementId: "G-JBBLRJCJYR"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const addToCartBtn = document.getElementById('addToCartBtn');
+let currentProduct = null;
+
+function updateCartIndicator(){
+  const items = JSON.parse(localStorage.getItem('cartItems') || '[]');
+  const total = items.reduce((sum, item)=> sum + (item.quantity || 1), 0);
+  if(total > 0){
+    addToCartBtn.textContent = `إضافة للسلة (${total})`;
+  } else {
+    addToCartBtn.textContent = 'إضافة للسلة';
+  }
+}
+
+function handleAddToCart(){
+  if(!currentProduct){ return; }
+  const items = JSON.parse(localStorage.getItem('cartItems') || '[]');
+  const index = items.findIndex(item => item.id === currentProduct.id && item.section === currentProduct.section);
+  if(index > -1){
+    items[index].quantity = (items[index].quantity || 1) + 1;
+  } else {
+    items.push({...currentProduct, quantity:1});
+  }
+  localStorage.setItem('cartItems', JSON.stringify(items));
+  const totalItems = items.reduce((sum,item)=> sum + (item.quantity || 1), 0);
+  addToCartBtn.textContent = `تمت الإضافة! (${totalItems})`;
+  setTimeout(updateCartIndicator, 1500);
+}
+
+addToCartBtn.addEventListener('click', handleAddToCart);
+window.addEventListener('storage', updateCartIndicator);
+window.addEventListener('focus', updateCartIndicator);
+updateCartIndicator();
+
+// جلب الـ ID والقسم من الرابط
+const params = new URLSearchParams(window.location.search);
+const productId = params.get('id');
+const section = params.get('section'); // اسم القسم: perfumes, clothes, glasses, watches
+
+function showError(message){
+  document.getElementById('productName').textContent = message;
+  document.getElementById('productImage').style.display = 'none';
+  document.getElementById('productBrand').textContent = '';
+  document.getElementById('productPrice').textContent = '';
+  document.getElementById('productDesc').textContent = '';
+}
+if(!productId || !section){
+  showError("المنتج غير موجود");
+} else {
+  const PRODUCTS_REF = section + '_products';
+  
+  db.ref(`${PRODUCTS_REF}/${productId}`).get()
+    .then(snapshot => {
+       if(snapshot.exists()){
+        const p = snapshot.val();
+        document.getElementById('productName').textContent = p.name || 'لا يوجد اسم';
+        document.getElementById('productImage').src = p.img || '';
+        document.getElementById('productImage').alt = p.name || 'صورة المنتج';
+        document.getElementById('productBrand').textContent = "البراند: " + (p.brand || 'غير محدد');
+        document.getElementById('productPrice').textContent = "السعر: " + (p.price ? '$'+p.price : 'غير محدد');
+        document.getElementById('productDesc').textContent = "الوصف: " + (p.desc || 'لا يوجد وصف');
+        currentProduct = {
+          id: productId,
+          section,
+          name: p.name || 'منتج',
+          price: p.price || 0,
+          img: p.img || '',
+          brand: p.brand || ''
+        };
+        updateCartIndicator();
+      } else {
+        showError("المنتج غير موجود");
+      }
+    })
+    .catch(err=>{
+      console.error(err);
+      showError("حدث خطأ أثناء جلب البيانات");
+    });
+}
+</script>
+
+</body>
+</html>

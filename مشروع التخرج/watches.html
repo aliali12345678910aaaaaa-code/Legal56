@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brand Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; font-family:'Poppins',sans-serif; background:#0f172a; color:#facc15; display:flex; flex-direction:column; align-items:center; }
+  header { display:flex; justify-content:space-between; align-items:center; padding:15px 30px; background:linear-gradient(90deg,#0f172a,#111); border-bottom:2px solid #facc15; width:100%; position:fixed; top:0; left:0; z-index:100; }
+  header h1 { color:#facc15; font-size:1.8rem; margin-right:5cm; }
+  header input { padding:7px 12px; border-radius:25px; border:1px solid #facc15; background:#111; color:#facc15; }
+  .spacer { height:80px; }
+  .brand-bar { display:flex; justify-content:center; flex-wrap:wrap; gap:30px; padding:20px; margin-top:80px; }
+  .brand-btn { background:#1e293b; border:2px solid #facc15; border-radius:15px; padding:0; text-align:center; cursor:pointer; transition:transform 0.3s,box-shadow 0.3s; min-width:180px; position:relative; overflow:hidden; }
+  .brand-btn img { width:100%; height:160px; object-fit:cover; display:block; }
+  .brand-btn div { display:none; }
+  .brand-btn:hover { transform:scale(1.1); box-shadow:0 0 20px 3px #facc15; }
+  .product-grid { display:flex; justify-content:center; flex-wrap:wrap; gap:25px; padding:30px; }
+  .product-card { background:#1e293b; border:2px solid #facc15; border-radius:12px; overflow:hidden; position:relative; width:260px; transition:transform 0.3s,box-shadow 0.3s; cursor:pointer; }
+  .product-card img { width:100%; height:200px; object-fit:cover; display:block; }
+  .product-card:hover { transform:scale(1.05); box-shadow:0 0 20px 3px #facc15; }
+  .product-info { position:absolute; bottom:0; right:5px; width:calc(100% - 10px); padding:10px 5px; background:linear-gradient(to top, rgba(250,204,21,0.9), rgba(0,0,0,0.2)); text-align:right; color:#0f172a; font-weight:700; font-size:1rem; border-bottom-left-radius:12px; border-bottom-right-radius:12px; box-sizing:border-box; opacity:0; transition:opacity 0.3s; }
+  .product-card:hover .product-info { opacity:1; }
+  .delete-btn { position:absolute; top:10px; left:10px; background:#facc15; color:#0f172a; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-weight:bold; z-index:10; }
+ .add-btn { position:fixed; bottom:30px; right:30px; background:#facc15; color:#0f172a; border:none; padding:15px 20px; border-radius:50%; font-size:1.5rem; cursor:pointer; box-shadow:0 0 15px #facc15; }
+  .cart-btn { position:fixed; bottom:100px; right:30px; background:#facc15; color:#0f172a; border:none; padding:12px 22px; border-radius:30px; font-size:1rem; cursor:pointer; box-shadow:0 0 15px rgba(250,204,21,0.5); font-weight:bold; }
+  .cart-btn:hover, .add-btn:hover { background:#d4af37; }  .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:1000; }
+  .modal-content { background:#1e293b; border:2px solid #facc15; border-radius:12px; padding:30px; width:400px; max-width:90%; position:relative; }
+  .modal-content h2 { text-align:center; margin-bottom:20px; color:#facc15; }
+  .modal-content label { display:block; margin-bottom:5px; color:#facc15; font-weight:600; }
+  .modal-content input, .modal-content select { width:100%; padding:8px 10px; margin-bottom:15px; border-radius:5px; border:1px solid #facc15; background:#0f172a; color:#facc15; }
+  .modal-content button { width:100%; padding:10px; background:#facc15; border:none; color:#0f172a; font-weight:bold; cursor:pointer; border-radius:5px; margin-top:10px; }
+  .modal-content button:hover { background:#d4af37; }
+  .close-modal { position:absolute; top:15px; left:15px; background:#facc15; color:#0f172a; border:none; font-weight:bold; padding:5px 10px; border-radius:5px; cursor:pointer; }
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+
+</head>
+<body>
+
+<header>
+  <h1>Brand Store</h1>
+  <input type="text" placeholder="ابحث عن منتج..." id="searchInput">
+</header>
+<div class="spacer"></div>
+
+<div class="brand-bar" id="brandBar"></div>
+<div class="product-grid" id="productGrid"></div>
+
+<button class="cart-btn" id="cartBtn">السلة</button>
+<button class="add-btn" id="openModal">+</button>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <button class="close-modal" id="closeModal">X</button>
+    <h2 id="modalTitle">إضافة منتج/براند</h2>
+    <label>النوع</label>
+    <select id="itemType">
+      <option value="brand">براند جديد</option>
+      <option value="product">منتج جديد</option>
+    </select>
+    <label>الاسم</label>
+    <input type="text" id="itemName">
+    <label id="brandSelectLabel">اختيار براند</label>
+    <select id="productBrandSelect"></select>
+    <label>السعر (بالدولار)</label>
+    <input type="number" id="productPrice" step="0.01" min="0">
+    <label>الوصف</label>
+    <input type="text" id="productDesc" placeholder="اكتب وصف المنتج هنا">
+    <label>صورة</label>
+    <input type="file" id="itemImage" accept="image/*">
+    <button id="addItemBtn">إضافة</button>
+  </div>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+  const firebaseConfig = {
+    apiKey: "AIzaSyC90sXtT6wNLWqR6SEBumToXC66iuNyBS8",
+    authDomain: "brand-store-5ec72.firebaseapp.com",
+    databaseURL: "https://brand-store-5ec72-default-rtdb.firebaseio.com",
+    projectId: "brand-store-5ec72",
+    storageBucket: "brand-store-5ec72.appspot.com",
+    messagingSenderId: "89302882519",
+    appId: "1:89302882519:web:28db21462957f7b1417892",
+    measurementId: "G-JBBLRJCJYR"
+  };
+  
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  const PRODUCTS_REF = 'watches_products';
+  const BRANDS_REF = 'watches_brands';
+
+  const modal = document.getElementById('modal');
+  const openModalBtn = document.getElementById('openModal');
+  const closeModalBtn = document.getElementById('closeModal');
+  const addItemBtn = document.getElementById('addItemBtn');
+  const brandBar = document.getElementById('brandBar');
+  const productGrid = document.getElementById('productGrid');
+  const itemType = document.getElementById('itemType');
+  const brandSelectLabel = document.getElementById('brandSelectLabel');
+  const productBrandSelect = document.getElementById('productBrandSelect');
+   const productPrice = document.getElementById('productPrice');
+  const productDesc = document.getElementById('productDesc');
+  const searchInput = document.getElementById('searchInput');
+  const cartBtn = document.getElementById('cartBtn');
+
+  function getCartItems(){
+    return JSON.parse(localStorage.getItem('cartItems') || '[]');
+  }
+
+  function getCartCount(){
+    return getCartItems().reduce((sum,item)=> sum + (item.quantity || 1), 0);
+  }
+
+  function updateCartButton(){
+    const count = getCartCount();
+    cartBtn.textContent = count>0 ? `السلة (${count})` : 'السلة';
+  }
+
+  cartBtn.addEventListener('click', ()=>{ window.location.href = 'cart.html'; });
+  window.addEventListener('storage', updateCartButton);
+  window.addEventListener('focus', updateCartButton);
+  updateCartButton();
+
+   let brands = [];
+  let products = [];
+  let currentBrand = null;
+  let isAdmin = false;
+
+  function updateUIForRole(){
+    if(openModalBtn){
+      openModalBtn.style.display = isAdmin ? 'block' : 'none';
+    }
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.style.display = isAdmin ? 'block' : 'none';
+    });
+  }
+
+  // إخفاء الأزرار بشكل افتراضي حتى التحقق من الدور
+  updateUIForRole();
+
+  const uid = localStorage.getItem("uid");
+  if (uid) {
+    firebase.database().ref("users/" + uid).get().then(snapshot => {
+      if (snapshot.exists()) {
+        const role = snapshot.val().role || "user";
+        isAdmin = role === "admin";
+        updateUIForRole();
+      } else {
+        console.warn("المستخدم غير موجود في قاعدة البيانات.");
+      }
+    }).catch(err => {
+      console.error("خطأ في التحقق من الدور:", err);
+    });
+  } else {
+    console.warn("لم يتم تسجيل الدخول (لا يوجد UID).");
+  }
+  openModalBtn.addEventListener('click', ()=> modal.style.display='flex');
+  closeModalBtn.addEventListener('click', ()=> modal.style.display='none');
+  window.addEventListener('click', e => { if(e.target===modal) modal.style.display='none'; });
+
+  itemType.addEventListener('change', ()=>{
+    if(itemType.value==='brand'){
+      brandSelectLabel.style.display='none';
+      productBrandSelect.style.display='none';
+      productPrice.style.display='none';
+      productDesc.style.display='none';
+    } else {
+      brandSelectLabel.style.display='block';
+      productBrandSelect.style.display='block';
+      productPrice.style.display='block';
+      productDesc.style.display='block';
+      updateBrandSelect();
+    }
+  });
+
+  function updateBrandSelect(){
+    productBrandSelect.innerHTML='';
+    brands.forEach(b=>{
+      const opt=document.createElement('option');
+      opt.value=b.name;
+      opt.textContent=b.name;
+      productBrandSelect.appendChild(opt);
+    });
+  }
+
+  function renderBrands(){
+    brandBar.innerHTML='';
+    brands.forEach(b=>{
+      const btn=document.createElement('div');
+      btn.classList.add('brand-btn');
+      btn.innerHTML=`<button class="delete-btn">حذف</button>
+      <img src="${b.img}" alt="${b.name}">
+      <div>${b.name}</div>`;
+       const deleteBtn = btn.querySelector('.delete-btn');
+      deleteBtn.style.display = isAdmin ? 'block' : 'none';
+      deleteBtn.addEventListener('click',(e)=>{
+        e.stopPropagation();
+        db.ref(BRANDS_REF + '/' + b.id).remove();
+      });
+      btn.addEventListener('click', ()=>{
+        currentBrand=b.name;
+        renderProducts();
+      });
+      brandBar.appendChild(btn);
+    });
+  }
+
+  function renderProductCard(p){
+    const card=document.createElement('div');
+    card.classList.add('product-card');
+    card.innerHTML=`<button class="delete-btn">حذف</button>
+    <img src="${p.img}" alt="${p.name}">
+    <div class="product-info">${p.name} - $${p.price||''}</div>`;
+    const deleteBtn = card.querySelector('.delete-btn');
+    deleteBtn.style.display = isAdmin ? 'block' : 'none';
+    deleteBtn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      db.ref(PRODUCTS_REF + '/' + p.id).remove();
+    });
+
+    card.addEventListener('click', ()=>{
+      window.location.href = 'product.html?id=' + p.id + '&section=watches';
+    });
+
+    return card;
+  }
+
+  function renderProducts(){
+    productGrid.innerHTML='';
+
+    if(!currentBrand){
+      productGrid.innerHTML = '<p style="color:#facc15; font-weight:600;">اختر براند لعرض المنتجات.</p>';
+      return;
+    }
+
+    const term = searchInput.value.trim().toLowerCase();
+    let filtered = products.filter(p=>p.brand===currentBrand);
+    if(term){
+      filtered = filtered.filter(p=>p.name.toLowerCase().includes(term));
+    }
+
+    if(filtered.length===0){
+      productGrid.innerHTML = '<p style="color:#facc15; font-weight:600;">لا توجد منتجات متاحة لهذا البراند.</p>';
+      return;
+    }
+
+    filtered.forEach(p=>{
+      productGrid.appendChild(renderProductCard(p));
+    });
+  }
+
+  db.ref(BRANDS_REF).on('value', snapshot=>{
+    brands=[];
+    snapshot.forEach(child=>{
+      brands.push({...child.val(), id:child.key});
+    });
+    updateBrandSelect();
+    if(!brands.some(b=>b.name===currentBrand)){
+      currentBrand = null;
+    }
+    renderBrands();
+    renderProducts();
+  });
+
+  db.ref(PRODUCTS_REF).on('value', snapshot=>{
+    products=[];
+    snapshot.forEach(child=>{
+      products.push({...child.val(), id:child.key});
+    });
+    renderProducts();
+  });
+
+  function resetFormAndClose(){
+    document.getElementById('itemName').value='';
+    document.getElementById('productPrice').value='';
+    document.getElementById('productDesc').value='';
+    document.getElementById('itemImage').value='';
+    modal.style.display='none';
+  }
+
+  addItemBtn.addEventListener('click', ()=>{
+    const name = document.getElementById('itemName').value.trim();
+    const file = document.getElementById('itemImage').files[0];
+    const desc = document.getElementById('productDesc').value.trim();
+    if(!name || !file){ alert('يرجى تعبئة الاسم والصورة'); return; }
+
+    let price = null;
+    if(itemType.value === 'product'){
+      if(brands.length === 0){ alert('لا يوجد براند لإضافة المنتج إليه'); return; }
+      const priceRaw = (productPrice.value || '').toString().trim();
+      price = parseFloat(priceRaw);
+      if(isNaN(price) || price <= 0){
+        alert('يرجى إدخال السعر بشكل صحيح (أكبر من 0)');
+        return;
+      }
+    }
+
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('key', '2b2476b335111798069b7c70cfd64173');
+
+    fetch('https://api.imgbb.com/1/upload', { method:'POST', body:formData })
+      .then(res=>res.json())
+      .then(data=>{
+        if(!data || !data.data || !data.data.url){
+          throw new Error('لم يتلقَّ رابط من ImgBB');
+        }
+        const url = data.data.url;
+        if(itemType.value==='brand'){
+          const newBrandRef = db.ref(BRANDS_REF).push();
+          return newBrandRef.set({name, img:url}).then(()=> resetFormAndClose());
+        } else {
+          const brandName = productBrandSelect.value;
+          const newProdRef = db.ref(PRODUCTS_REF).push();
+          return newProdRef.set({name, brand:brandName, price, img:url, desc}).then(()=> resetFormAndClose());
+        }
+      })
+      .catch(err=>{
+        console.error('خطأ بالرفع أو الحفظ:', err);
+        alert('حدث خطأ في رفع الصورة أو حفظ البيانات. تحقق من الاتصال أو المفتاح.');
+      });
+  });
+
+  searchInput.addEventListener('input', renderProducts);
+
+  currentBrand=null;
+  renderProducts();
+});
+</script>
+
+</body>
+</html>
