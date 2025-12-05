@@ -8,15 +8,41 @@
   <!-- FontAwesome للأيقونات -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-XxVtYQ+ghcGrRn/D6jz0c+3kWkZz2E6Oz/Ud7sFlz1/+9Th9RbGdYHw4vwx6N9Z6FqxN3vS2/1j2FqgSgYJ6PQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
+    :root {
+      --bg: radial-gradient(circle at 20% 20%, #1f2937 0, #0b1324 35%, #0b0f1a 70%);
+      --card: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      --accent: #facc15;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: 'Tajawal', sans-serif;
-      background-color: #111827;
-      color: #fff;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       overflow-x: hidden;
+      position: relative;
+    }
+
+    /* تأثير نجوم بسيط في الخلفية */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.07) 1px, transparent 0);
+      background-size: 120px 120px;
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 0;
     }
 
     /* 🏷️ اسم الموقع */
@@ -26,7 +52,7 @@
       left: 30px;
       font-size: 30px;
       font-weight: 700;
-      color: #facc15;
+      color: var(--accent);
       letter-spacing: 1px;
       text-shadow: 0 2px 6px rgba(0,0,0,0.5);
       z-index: 20;
@@ -37,7 +63,8 @@
       position: fixed;
       top: 0;
       width: 100%;
-      background-color: #1f2937;
+      background-color: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(8px);
       color: #fff;
       padding: 10px 0;
       overflow: hidden;
@@ -61,54 +88,9 @@
 
     .news-text span {
       margin-left: 40px;
-      color: #facc15;
+      color: var(--accent);
       font-weight: 600;
       text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-    }
-
-    /* 🔍 شريط البحث */
-    .search-container {
-      margin-top: 25vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-    }
-
-    .search-box {
-      display: flex;
-      align-items: center;
-      background: #fff;
-      border-radius: 50px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-      padding: 10px 20px;
-      width: 450px;
-      max-width: 90%;
-    }
-
-    .search-box input {
-      flex: 1;
-      border: none;
-      outline: none;
-      font-size: 16px;
-      padding: 10px;
-      background: transparent;
-      color: #333;
-    }
-
-    .search-box button {
-      background-color: #facc15;
-      color: #000;
-      border: none;
-      border-radius: 25px;
-      padding: 10px 25px;
-      cursor: pointer;
-      transition: 0.3s;
-      font-weight: bold;
-    }
-
-    .search-box button:hover {
-      background-color: #d4af37;
     }
 
     /* 🔐 زر تسجيل الدخول */
@@ -116,39 +98,154 @@
       position: fixed;
       top: 60px; /* تم تعديل الارتفاع لتجنب تداخل شريط الأخبار */
       right: 30px;
-      background-color: transparent;
-      border: 2px solid #facc15;
-      color: #facc15;
+      background: rgba(0,0,0,0.3);
+      border: 2px solid var(--accent);
+      color: var(--accent);
       padding: 8px 18px;
       border-radius: 30px;
       text-decoration: none;
-      font-weight: 600;
+      font-weight: 700;
+      letter-spacing: 0.2px;
       transition: 0.3s;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+      z-index: 15;
     }
 
     .login-btn:hover {
-      background-color: #facc15;
+      background-color: var(--accent);
       color: #000;
+      transform: translateY(-2px);
     }
 
-    /*  الأقسام */
-    .sections {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 25px;
-      justify-items: center;
-      margin-top: 60px;
+    /* بطل الصفحة */
+    .hero {
+      margin-top: 120px;
+      text-align: center;
+      max-width: 850px;
       padding: 20px;
-      max-width: 900px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      margin: 0 0 12px;
+      font-size: 38px;
+      color: #fff;
+      line-height: 1.3;
+    }
+
+    .hero p {
+      margin: 0 auto 24px;
+      color: var(--muted);
+      max-width: 640px;
+      line-height: 1.8;
+      font-size: 17px;
+    }
+
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .cta-btn {
+      background: var(--accent);
+      color: #0f172a;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 15px 40px rgba(250, 204, 21, 0.2);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 45px rgba(250, 204, 21, 0.35);
+    }
+
+    .ghost-btn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.25s;
+      backdrop-filter: blur(4px);
+    }
+
+    .ghost-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    /* شريط الإحصاءات السريع */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin: 28px auto 10px;
+      max-width: 820px;
+      padding: 0 20px;
+      z-index: 1;
       width: 100%;
     }
 
+    .stat-card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .stat-card i {
+      color: var(--accent);
+      font-size: 22px;
+    }
+
+    .stat-card strong {
+      display: block;
+      color: #fff;
+      font-size: 18px;
+    }
+
+    .stat-card span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* الأقسام */
+    .sections-wrapper {
+      width: 100%;
+      padding: 10px 24px 60px;
+      display: flex;
+      justify-content: center;
+      z-index: 1;
+    }
+
+    .sections {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 22px;
+      width: 100%;
+      max-width: 980px;
+      margin-top: 10px;
+    }
+
     .section-box {
-      background: linear-gradient(145deg, #1f2937, #111827);
-      width: 140px;
-      height: 130px;
-      border-radius: 18px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
       text-align: center;
       cursor: pointer;
       transition: all 0.3s;
@@ -156,42 +253,69 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      padding: 22px 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section-box::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 20%, rgba(250,204,21,0.15), transparent 35%);
+      opacity: 0;
+      transition: 0.35s;
     }
 
     .section-box:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 6px 18px rgba(250,204,21,0.3);
-      border: 1px solid #facc15;
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: 0 18px 40px rgba(250,204,21,0.18);
+      border: 1px solid rgba(250,204,21,0.4);
+    }
+
+    .section-box:hover::after {
+      opacity: 1;
     }
 
     .section-box:active {
-      transform: scale(0.95);
+      transform: scale(0.98);
     }
 
     .section-icon {
-      font-size: 32px;
-      margin-bottom: 8px;
-      color: #facc15;
+      font-size: 34px;
+      margin-bottom: 10px;
+      color: var(--accent);
+      z-index: 1;
     }
 
     .section-label {
-      font-size: 16px;
-      font-weight: 600;
-      color: #facc15;
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      z-index: 1;
+    }
+
+    .section-desc {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 6px;
+      z-index: 1;
     }
 
     /*  تجاوب */
     @media (max-width: 900px) {
       .sections {
-        gap: 20px;
+        gap: 16px;
       }
-      .section-box {
-        width: 130px;
-        height: 120px;
+      .hero h1 {
+        font-size: 32px;
+      }
+      .hero p {
+        font-size: 16px;
       }
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 640px) {
       .site-name {
         font-size: 24px;
         top: 15px;
@@ -202,12 +326,12 @@
         top: 55px; /* تم تعديل الارتفاع لتجنب تداخل شريط الأخبار */
         padding: 6px 12px;
       }
-      .section-box {
-        width: 120px;
-        height: 110px;
+      .hero {
+        margin-top: 130px;
+        padding: 16px;
       }
-      .search-box {
-        width: 90%;
+      .sections {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       }
     }
   </style>
@@ -230,41 +354,75 @@
   <!-- 🔐 زر تسجيل الدخول -->
   <a href="login.html" class="login-btn">تسجيل الدخول</a>
 
-  <!-- 🔍 شريط البحث -->
-  <div class="search-container">
-    <div class="search-box">
-      <input type="text" placeholder="ابحث عن منتج أو ماركة...">
-      <button>بحث</button>
-    </div>
-  </div>
+  <main>
+    <section class="hero">
+      <h1>تسوق أفخم الماركات العالمية في مكان واحد</h1>
+      <p>تجربة تسوق فاخرة مع تشكيلة مختارة من الساعات، النظارات، العطور، والملابس. اختر القطعة التي تعبر عنك، مع عروض حصرية وتوصيل سريع.</p>
+      <div class="hero-actions">
+        <button class="cta-btn" onclick="window.location.href='offers.html'">ابدأ بتصفح العروض</button>
+        <button class="ghost-btn" onclick="window.location.href='product.html'">شاهد أبرز المنتجات</button>
+      </div>
+    </section>
 
-  <!--  أقسام -->
-  <div class="sections">
-    <div class="section-box" onclick="window.location.href='watches.html'">
-      <div class="section-icon"><i class="fa-solid fa-clock"></i></div>
-      <div class="section-label">ساعات</div>
+    <div class="stats">
+      <div class="stat-card">
+        <i class="fa-solid fa-star"></i>
+        <div>
+          <strong>+1200 تقييم ممتاز</strong>
+          <span>عملاء موثوقون يحبون التجربة</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <i class="fa-solid fa-truck-fast"></i>
+        <div>
+          <strong>شحن سريع</strong>
+          <span>توصيل في أقل من 48 ساعة</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <i class="fa-solid fa-shield-heart"></i>
+        <div>
+          <strong>ضمان أصالة</strong>
+          <span>منتجات مختارة من الماركات العالمية</span>
+        </div>
+      </div>
     </div>
 
-    <div class="section-box" onclick="window.location.href='glasses.html'">
-      <div class="section-icon"><i class="fa-solid fa-sunglasses"></i></div>
-      <div class="section-label"><نظارات></div>
-    </div>
+    <!--  أقسام -->
+    <div class="sections-wrapper">
+      <div class="sections">
+        <div class="section-box" onclick="window.location.href='watches.html'">
+          <div class="section-icon"><i class="fa-solid fa-clock"></i></div>
+          <div class="section-label">ساعات</div>
+          <div class="section-desc">موديلات فاخرة للرجال والنساء</div>
+        </div>
 
-    <div class="section-box" onclick="window.location.href='perfumes.html'">
-      <div class="section-icon"><i class="fa-solid fa-gem"></i></div>
-      <div class="section-label">عطور</div>
-    </div>
+        <div class="section-box" onclick="window.location.href='glasses.html'">
+          <div class="section-icon"><i class="fa-solid fa-sunglasses"></i></div>
+          <div class="section-label">نظارات</div>
+          <div class="section-desc">عدسات شمسية وطبية بتصاميم عصرية</div>
+        </div>
 
-    <div class="section-box" onclick="window.location.href='clothes.html'">
-      <div class="section-icon"><i class="fa-solid fa-shirt"></i></div>
-      <div class="section-label">ملابس</div>
-    </div>
+        <div class="section-box" onclick="window.location.href='perfumes.html'">
+          <div class="section-icon"><i class="fa-solid fa-gem"></i></div>
+          <div class="section-label">عطور</div>
+          <div class="section-desc">نفحات شرقية وغربية تدوم طويلاً</div>
+        </div>
 
-    <div class="section-box" onclick="window.location.href='offers.html'">
-      <div class="section-icon"><i class="fa-solid fa-tag"></i></div>
-      <div class="section-label">العروض</div>
+        <div class="section-box" onclick="window.location.href='clothes.html'">
+          <div class="section-icon"><i class="fa-solid fa-shirt"></i></div>
+          <div class="section-label">ملابس</div>
+          <div class="section-desc">اختيارات أنيقة لكل المناسبات</div>
+        </div>
+
+        <div class="section-box" onclick="window.location.href='offers.html'">
+          <div class="section-icon"><i class="fa-solid fa-tag"></i></div>
+          <div class="section-label">العروض</div>
+          <div class="section-desc">خصومات حصرية لفترة محدودة</div>
+        </div>
+      </div>
     </div>
-  </div>
+  </main>
 
 </body>
 </html>
