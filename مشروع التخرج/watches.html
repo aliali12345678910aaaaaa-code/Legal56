@@ -6,22 +6,34 @@
 <title>Brand Store</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  body { margin:0; font-family:'Poppins',sans-serif; background:#0f172a; color:#facc15; display:flex; flex-direction:column; align-items:center; }
-  header { display:flex; justify-content:space-between; align-items:center; padding:15px 30px; background:linear-gradient(90deg,#0f172a,#111); border-bottom:2px solid #facc15; width:100%; position:fixed; top:0; left:0; z-index:100; }
-  header h1 { color:#facc15; font-size:1.8rem; margin-right:5cm; }
-  header input { padding:7px 12px; border-radius:25px; border:1px solid #facc15; background:#111; color:#facc15; }
-  .spacer { height:80px; }
-  .brand-bar { display:flex; justify-content:center; flex-wrap:wrap; gap:30px; padding:20px; margin-top:80px; }
-  .brand-btn { background:#1e293b; border:2px solid #facc15; border-radius:15px; padding:0; text-align:center; cursor:pointer; transition:transform 0.3s,box-shadow 0.3s; min-width:180px; position:relative; overflow:hidden; }
-  .brand-btn img { width:100%; height:160px; object-fit:cover; display:block; }
-  .brand-btn div { display:none; }
-  .brand-btn:hover { transform:scale(1.1); box-shadow:0 0 20px 3px #facc15; }
-  .product-grid { display:flex; justify-content:center; flex-wrap:wrap; gap:25px; padding:30px; }
-  .product-card { background:#1e293b; border:2px solid #facc15; border-radius:12px; overflow:hidden; position:relative; width:260px; transition:transform 0.3s,box-shadow 0.3s; cursor:pointer; }
-  .product-card img { width:100%; height:200px; object-fit:cover; display:block; }
-  .product-card:hover { transform:scale(1.05); box-shadow:0 0 20px 3px #facc15; }
-  .product-info { position:absolute; bottom:0; right:5px; width:calc(100% - 10px); padding:10px 5px; background:linear-gradient(to top, rgba(250,204,21,0.9), rgba(0,0,0,0.2)); text-align:right; color:#0f172a; font-weight:700; font-size:1rem; border-bottom-left-radius:12px; border-bottom-right-radius:12px; box-sizing:border-box; opacity:0; transition:opacity 0.3s; }
-  .product-card:hover .product-info { opacity:1; }
+ body { margin:0; font-family:'Poppins',sans-serif; background:radial-gradient(circle at 20% 20%,rgba(250,204,21,0.06),transparent 25%),radial-gradient(circle at 80% 10%,rgba(96,165,250,0.08),transparent 22%),#0b1224; color:#facc15; display:flex; flex-direction:column; align-items:center; }
+  header { display:flex; justify-content:space-between; align-items:center; padding:16px 28px; background:linear-gradient(90deg,#0f172a,#0b132c); border-bottom:2px solid #facc15; width:100%; position:fixed; top:0; left:0; z-index:100; backdrop-filter:blur(8px); }
+  header h1 { color:#facc15; font-size:1.6rem; margin:0; letter-spacing:1px; }
+  header .search-wrapper { display:flex; align-items:center; gap:10px; background:#0b1224; border:1px solid rgba(250,204,21,0.6); border-radius:999px; padding:8px 14px; box-shadow:0 0 12px rgba(250,204,21,0.25); }
+  header input { padding:6px 10px; border-radius:12px; border:none; background:transparent; color:#facc15; min-width:220px; outline:none; }
+  header input::placeholder { color:rgba(250,204,21,0.7); }
+  .spacer { height:90px; }
+  .hero { text-align:center; margin:30px auto 10px; max-width:760px; padding:0 16px; }
+  .hero h2 { margin:0 0 10px; font-size:1.8rem; color:#facc15; }
+  .hero p { margin:0; color:#e2e8f0; line-height:1.6; }
+  .brand-bar { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:18px; width:100%; max-width:1100px; padding:10px 24px 22px; margin-top:10px; box-sizing:border-box; }
+  .brand-btn { background:#111827; border:2px solid rgba(250,204,21,0.7); border-radius:16px; padding:0; text-align:center; cursor:pointer; transition:transform 0.35s ease,box-shadow 0.35s ease,border-color 0.35s ease; position:relative; overflow:hidden; min-height:200px; }
+  .brand-btn img { width:100%; height:170px; object-fit:cover; display:block; filter:saturate(1.05); }
+  .brand-name { position:absolute; bottom:0; right:0; left:0; padding:10px 12px; background:linear-gradient(to top,rgba(0,0,0,0.85),rgba(0,0,0,0)); color:#facc15; font-weight:700; letter-spacing:0.5px; }
+  .brand-btn:hover { transform:translateY(-6px); box-shadow:0 10px 26px rgba(250,204,21,0.25); border-color:#facc15; }
+  .brand-btn.active { box-shadow:0 0 0 2px #facc15 inset,0 10px 26px rgba(250,204,21,0.35); transform:translateY(-4px); }
+  .product-section { width:100%; max-width:1200px; padding:14px 24px 40px; box-sizing:border-box; }
+  .product-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:22px; }
+  .product-card { background:#111827; border:2px solid rgba(250,204,21,0.7); border-radius:14px; overflow:hidden; position:relative; transition:transform 0.3s ease,box-shadow 0.3s ease,border-color 0.3s ease; cursor:pointer; display:flex; flex-direction:column; }
+  .product-card .image-wrapper { position:relative; overflow:hidden; }
+  .product-card img { width:100%; height:210px; object-fit:cover; display:block; transition:transform 0.35s ease; }
+  .product-card:hover img { transform:scale(1.06); }
+  .product-card:hover { transform:translateY(-6px); box-shadow:0 12px 28px rgba(250,204,21,0.25); border-color:#facc15; }
+  .product-info { padding:14px 14px 16px; color:#e5e7eb; display:flex; flex-direction:column; gap:8px; }
+  .product-name { font-weight:700; font-size:1.05rem; color:#facc15; }
+  .product-meta { display:flex; justify-content:space-between; gap:8px; color:#cbd5e1; font-size:0.9rem; }
+  .product-price { color:#22c55e; font-weight:700; }
+  .product-desc { margin:0; color:#cbd5e1; font-size:0.92rem; line-height:1.4; max-height:3.1em; overflow:hidden; }
   .delete-btn { position:absolute; top:10px; left:10px; background:#facc15; color:#0f172a; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-weight:bold; z-index:10; }
  .add-btn { position:fixed; bottom:30px; right:30px; background:#facc15; color:#0f172a; border:none; padding:15px 20px; border-radius:50%; font-size:1.5rem; cursor:pointer; box-shadow:0 0 15px #facc15; }
   .cart-btn { position:fixed; bottom:100px; right:30px; background:#facc15; color:#0f172a; border:none; padding:12px 22px; border-radius:30px; font-size:1rem; cursor:pointer; box-shadow:0 0 15px rgba(250,204,21,0.5); font-weight:bold; }
@@ -44,12 +56,22 @@
 
 <header>
   <h1>Brand Store</h1>
-  <input type="text" placeholder="ابحث عن منتج..." id="searchInput">
+  <div class="search-wrapper">
+    <input type="text" placeholder="ابحث عن منتج أو اسم براند..." id="searchInput">
+  </div>
 </header>
 <div class="spacer"></div>
 
+<section class="hero">
+  <h2>اكتشف أفضل الساعات الفاخرة</h2>
+  <p>تصفح المجموعات المميزة، اختر البراند المفضل لديك، وتعرف على تفاصيل كل ساعة بتجربة عرض جديدة وأكثر أناقة.</p>
+</section>
+
 <div class="brand-bar" id="brandBar"></div>
-<div class="product-grid" id="productGrid"></div>
+
+<section class="product-section">
+  <div class="product-grid" id="productGrid"></div>
+</section>
 
 <button class="cart-btn" id="cartBtn">السلة</button>
 <button class="add-btn" id="openModal">+</button>
@@ -191,14 +213,19 @@ document.addEventListener('DOMContentLoaded', ()=>{
     });
   }
 
-  function renderBrands(){
+   function renderBrands(){
     brandBar.innerHTML='';
+    const term = searchInput.value.trim().toLowerCase();
     brands.forEach(b=>{
+      const matchesSearch = !term || b.name.toLowerCase().includes(term);
+      if(!matchesSearch) return;
+
       const btn=document.createElement('div');
       btn.classList.add('brand-btn');
+      if(currentBrand===b.name){ btn.classList.add('active'); }
       btn.innerHTML=`<button class="delete-btn">حذف</button>
       <img src="${b.img}" alt="${b.name}">
-      <div>${b.name}</div>`;
+      <div class="brand-name">${b.name}</div>`;
        const deleteBtn = btn.querySelector('.delete-btn');
       deleteBtn.style.display = isAdmin ? 'block' : 'none';
       deleteBtn.addEventListener('click',(e)=>{
@@ -207,6 +234,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       });
       btn.addEventListener('click', ()=>{
         currentBrand=b.name;
+        renderBrands();
         renderProducts();
       });
       brandBar.appendChild(btn);
@@ -216,9 +244,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
   function renderProductCard(p){
     const card=document.createElement('div');
     card.classList.add('product-card');
+    const priceValue = typeof p.price === 'number' ? `$${p.price.toFixed(2)}` : '—';
     card.innerHTML=`<button class="delete-btn">حذف</button>
-    <img src="${p.img}" alt="${p.name}">
-    <div class="product-info">${p.name} - $${p.price||''}</div>`;
+    <div class="image-wrapper"><img src="${p.img}" alt="${p.name}"></div>
+    <div class="product-info">
+      <div class="product-name">${p.name}</div>
+      <div class="product-meta"><span>براند: ${p.brand||'-'}</span><span class="product-price">${priceValue}</span></div>
+      <p class="product-desc">${p.desc || 'لا يوجد وصف متاح لهذا المنتج.'}</p>
+    </div>`;
     const deleteBtn = card.querySelector('.delete-btn');
     deleteBtn.style.display = isAdmin ? 'block' : 'none';
     deleteBtn.addEventListener('click', (e)=>{
@@ -329,8 +362,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
       });
   });
 
-  searchInput.addEventListener('input', renderProducts);
-
+searchInput.addEventListener('input', ()=>{
+    renderBrands();
+    renderProducts();
+  });
   currentBrand=null;
   renderProducts();
 });
